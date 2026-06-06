@@ -17,7 +17,10 @@ from converters import word_to_pdf, pdf_to_word
 # CONFIGURATION
 # =====================================
 
-TOKEN = "BOT_TOKEN"
+TOKEN = os.getenv("BOT_TOKEN")
+
+if not TOKEN:
+    raise ValueError("BOT_TOKEN environment variable not set")
 
 DOWNLOAD_FOLDER = "downloads"
 OUTPUT_FOLDER = "outputs"
