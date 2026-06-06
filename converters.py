@@ -1,11 +1,19 @@
 from pdf2docx import Converter
-from docx2pdf import convert
 import subprocess
 import os
 
+
 def word_to_pdf(input_file, output_file):
+    """
+    Convert DOCX to PDF using LibreOffice
+    """
 
     output_dir = os.path.dirname(output_file)
+
+    if not output_dir:
+        output_dir = "."
+
+    os.makedirs(output_dir, exist_ok=True)
 
     subprocess.run(
         [
@@ -15,19 +23,30 @@ def word_to_pdf(input_file, output_file):
             "pdf",
             input_file,
             "--outdir",
-            output_dir
+            output_dir,
         ],
-        check=True
+        check=True,
     )
+
+    # LibreOffice creates PDF with same name as input file
+    generated_pdf = os.path.join(
+        output_dir,
+        os.path.splitext(os.path.basename(input_file))[0] + ".pdf"
+    )
+
+    # Rename if output filename is different
+    if generated_pdf != output_file:
+        os.replace(generated_pdf, output_file)
 
 
 def pdf_to_word(input_file, output_file):
     """
     Convert PDF to DOCX
     """
-    cv = Converter(input_file)
+
+    converter = Converter(input_file)
 
     try:
-        cv.convert(output_file)
+        converter.convert(output_file, start=0, end=None)
     finally:
-        cv.close()
+        converter.close()
